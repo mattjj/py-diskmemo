@@ -8,7 +8,7 @@ cache_dirname = 'cached_func_calls'
 # then i can't use functools.wraps
 # TODO modulename.functionname instead of just functionname
 
-def cache(f):
+def memoize(f):
     if not os.path.isdir(cache_dirname):
         os.mkdir(cache_dirname)
         print 'Created cache directory %s' % os.path.join(os.getcwd(),cache_dirname)

@@ -4,8 +4,8 @@ means I don't have to re-write caching code every time!
 
 Here's a simple usage example. In fibdemo.py we have the code:
 
-    import diskcache
-    @diskcache
+    import diskmemo
+    @diskmemo.memoize
     def fib(n):
         "Return the nth Fibonacci number."
         if n in (0,1):

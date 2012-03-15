@@ -1,6 +1,6 @@
-import diskcache
+import diskmemo
 
-@diskcache.cache
+@diskmemo.memoize
 def fib(n):
     "Return the nth Fibonacci number."
     if n in (0,1):
