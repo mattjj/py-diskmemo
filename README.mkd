@@ -1,0 +1,26 @@
+A simple disk-caching/memoizing wrapper. I've found this thing to be very
+useful when trying experiments with lots of different parameter values: it
+means I don't have to re-write caching code every time!
+
+Here's a simple usage example. In fibdemo.py we have the code:
+
+    import diskcache
+    @diskcache
+    def fib(n):
+        "Return the nth Fibonacci number."
+        if n in (0,1):
+            return n
+        return fib(n-1) + fib(n-2)
+
+From a Python interpreter we can do this:
+
+    from fibdemo import fib
+    print fib(100) # <- way faster than naive recursion!
+
+Then we can exit and re-enter the python interpreter, re-import the function or
+re-define the same one, and
+
+    print fib(100) # <- instant!
+
+It syncs to disk at every call. It probably doesn't support instance methods
+nicely at all. It only works off the function name!
