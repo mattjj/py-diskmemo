@@ -1,7 +1,9 @@
-A simple disk-caching/memoizing wrapper. I've found this thing to be very
-useful when trying experiments with lots of different parameter values: using
-diskmemo I don't have to re-write caching code for every function and I don't
-have to worry about restarting the interpreter.
+A simple disk-caching/memoizing decorator based on the disk-persistent
+dictionary in the standard library,
+[`shelve`](http://docs.python.org/library/shelve.html). I've found this thing
+to be very useful when trying experiments with lots of different parameter
+values: using diskmemo I don't have to re-write caching code for every function
+and I don't have to worry about restarting the interpreter.
 
 Here's a simple usage example based on the standard memoized Fibonacci sequence
 computation.
