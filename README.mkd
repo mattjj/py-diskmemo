@@ -23,7 +23,7 @@ from fibdemo import fib
 print fib(100) # <- way faster than naive recursion!
 ```
 
-Then we can exit and re-enter the python interpreter, re-import the function or
+Then we can exit and re-enter the Python interpreter, re-import the function or
 re-define the same one, and
 
 ```python
