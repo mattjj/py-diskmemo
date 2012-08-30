@@ -1,40 +1,45 @@
-import os, shelve, inspect, functools
+import numpy as np
+import os, shelve, inspect, functools, hashlib
+from warnings import warn
+
+# doesn't work with nested stuff (like dicts in argument lists)
 
 cache_dirname = 'cached_func_calls'
-
-# TODO add support for varargs and kwargs
-# TODO inspect.getcallargs in python27 would do the parsing stuff for me
-# TODO add support for instance methods... do i need a class-based decorator?
-# then i can't use functools.wraps
-# TODO modulename.functionname instead of just functionname
 
 def memoize(f):
     if not os.path.isdir(cache_dirname):
         os.mkdir(cache_dirname)
-        print 'Created cache directory %s' % os.path.join(os.getcwd(),cache_dirname)
+        print 'Created cache directory %s' \
+                % os.path.join(os.path.abspath(__file__),cache_dirname)
 
-    cachefilename = os.path.join(cache_dirname,f.__name__)
-    cache = shelve.open(cachefilename,protocol=2)
+    cache_filename = f.__module__ + f.__name__
+    cachepath = os.path.join(cache_dirname, cache_filename)
 
-    spec = inspect.getargspec(f)
-    if spec.varargs is not None or spec.keywords is not None:
-        print 'Warning: cannot disk cache %s because it has varargs or keyword args. Must improve implementation.' % f.__name__
-        return f
-
-    default_vals = spec.defaults if spec.defaults is not None else []
-    default_args = dict((argname,val) for argname,val in zip(spec.args[-len(default_vals):],default_vals))
+    try:
+        cache = shelve.open(cachepath,protocol=2)
+    except:
+        print 'Could not open cache file %s, maybe name collision' % cachepath
+        cache = None
 
     @functools.wraps(f)
-    def wrapper(*args,**kwargs):
-        full_arglist = list(args)
-        for argname in spec.args[len(args):]:
-            if argname in kwargs:
-                full_arglist.append(kwargs[argname])
-            elif argname in default_args:
-                full_arglist.append(default_args[argname])
+    def wrapped(*args,**kwargs):
+        argdict = {}
+
+        # handle instance methods
+        if hasattr(f,'__self__'):
+            args = args[1:]
+            # argdict['classname'] = f.__self__.__class__
+
+        tempargdict = inspect.getcallargs(f,*args,**kwargs)
+
+        # handle numpy arrays
+        for k,v in tempargdict.iteritems():
+            if isinstance(v,np.ndarray):
+                argdict[k] = hashlib.sha1(v).hexdigest()
             else:
-                raise TypeError, 'unexpected argument in %s: %s' % (f.__name__,argname)
-        key = str(full_arglist)
+                argdict[k] = v
+
+        key = str(hash(frozenset(argdict.items())))
 
         try:
             return cache[key]
@@ -44,6 +49,8 @@ def memoize(f):
             cache.sync()
             return value
         except TypeError:
-            print 'Warning: could not disk cache call to %s because arguments could not be made into strings' % f.__name__
+            warn('Warning: could not disk cache call to %s; it probably has unhashable args'
+                    % (f.__module__ + '.' + f.__name__))
             return f(*args,**kwargs)
-    return wrapper
+
+    return wrapped
