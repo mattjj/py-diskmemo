@@ -49,8 +49,8 @@ def memoize(f):
             cache.sync()
             return value
         except TypeError:
-            warn('Warning: could not disk cache call to %s; it probably has unhashable args'
-                    % (f.__module__ + '.' + f.__name__))
+            print 'Warning: could not disk cache call to %s; it probably has unhashable args' \
+                    % (f.__module__ + '.' + f.__name__)
             return f(*args,**kwargs)
 
     return wrapped
