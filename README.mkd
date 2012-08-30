@@ -10,6 +10,7 @@ computation.
 
 ```python
 import diskmemo
+
 @diskmemo.memoize
 def fib(n):
     "Return the nth Fibonacci number."
