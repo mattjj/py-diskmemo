@@ -1,6 +1,5 @@
 import numpy as np
 import os, shelve, inspect, functools, hashlib
-from warnings import warn
 
 # doesn't work with nested stuff (like dicts in argument lists)
 
