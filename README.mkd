@@ -35,5 +35,4 @@ print fib(100) # <- instant!
 The Fibonacci case isn't very inspiring, but if you have any deterministic code
 that you'd like to persistently memoize, this decorator can help!
 
-It syncs to disk at every call. It probably doesn't support instance methods
-nicely at all. It only works off the function name!
+It syncs to disk at every call.
